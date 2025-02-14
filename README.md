@@ -1,29 +1,70 @@
-# VerseCatch - Bible Verse Detection Application
+# Sermon AI - Next.js Application
 
-VerseCatch is a web application that listens to spoken words, analyzes them for Bible references, and then displays the corresponding verses in real-time. The application supports multiple Bible versions, including KJV, ESV, and NIV.
+## Overview
+Sermon AI is a Next.js application that analyzes spoken text for Bible references using Google's Gemini AI. It supports multiple Bible versions (KJV, ESV, and NIV) and extracts scripture passages from provided speech input.
 
 ## Features
-- Real-time speech-to-text transcription
-- Detection of Bible references from spoken text
-- Fetch and display Bible verses from multiple translations (KJV, ESV, NIV)
-- Support for continuous speech recognition
-- User can select the preferred Bible version
+- Speech-to-text processing (initially tested with Vosk but found slow on free hosting).
+- Bible reference extraction using AI.
+- Support for three Bible versions (KJV, ESV, NIV).
+- Streamed API responses to minimize latency.
 
-## Tech Stack
-- **Frontend**: React (with Next.js)
-- **Backend**: Next.js API routes
-- **Voice Recognition**: Web Speech API (SpeechRecognition)
-- **Bible Data**: KJV, ESV, and NIV JSON data
-- **Generative AI**: Google's Gemini API for context-aware text analysis
+## Installation
+```sh
+# Clone the repository
+git clone https://github.com/your-repo/sermon-ai.git
+cd sermon-ai
 
-## Setup
-
-### Prerequisites
-- Node.js (v16.x or later)
-- Google Gemini API key (for Generative AI)
-
-### Install Dependencies
-Run the following command to install the required dependencies:
-
-```bash
+# Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your Google Gemini API key to .env
+```
+
+## Running Locally
+```sh
+npm run dev
+```
+
+## API Response Format
+The backend returns data in the following JSON format:
+```json
+{
+  "type": "quote",
+  "data": {
+    "reference": "Book Chapter:Verse",
+    "text": "Verse text here",
+    "version": "KJV"
+  }
+}
+```
+
+## Hosting Attempts
+### Vercel
+- Free tier limit exceeded (Edge Function exceeded 1MB size limit)
+- Error received:
+  ```
+  Error: The Edge Function "api/stream" size is 3.79 MB and your plan size limit is 1 MB.
+  ```
+
+### Render
+- Hosted the backend on Render at https://backend-lx3t.onrender.com.
+- Free plan performance was slow for Vosk-based speech recognition.
+
+## Screenshots
+### Input Screen
+![Input Screen](image/One.png)
+
+### Result Screen
+![Result Screen](image/Two.png)
+
+## Future Improvements
+- Optimize function sizes for Vercel hosting.
+- Explore alternative speech-to-text APIs with better performance on free tiers.
+- Implement caching and indexing for faster Bible verse lookups.
+
+## Credits
+- Bible JSON data sourced from [jadenzaleski/BibleTranslations](https://github.com/jadenzaleski/BibleTranslations).
+
