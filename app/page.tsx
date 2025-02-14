@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -49,6 +48,7 @@ export default function Page() {
 
       recognition.onresult = async (event: any) => {
         if (isPausedRef.current) return;
+
         let currentTranscript = "";
         for (let i = 0; i < event.results.length; i++) {
           currentTranscript += event.results[i][0].transcript;
@@ -74,7 +74,6 @@ export default function Page() {
 
             if (!response.ok) throw new Error("Failed to process text");
 
-     
             const reader = response.body?.getReader();
             if (!reader) return;
 
@@ -93,8 +92,9 @@ export default function Page() {
                   );
                   return exists ? prev : [...prev, result.data];
                 });
-// setIsListening(false)
-setIsPaused(false)
+
+                setIsListening(false)
+                setIsPaused(true)
               }
             }
           } catch (error) {
@@ -130,102 +130,80 @@ setIsPaused(false)
       setIsListening(true);
       setIsPaused(false);
       setQuotes([]);
+      setTranscript("");
     }
-  };
-
-  const getButtonContent = () => {
-    if (isListening) {
-      return (
-        <>
-          <MicOff className="h-4 w-4" />
-          <span>Stop Listening</span>
-        </>
-      );
-    }
-    if (isPaused) {
-      return (
-        <>
-          <Pause className="h-4 w-4" />
-          <span>Continue Listening</span>
-        </>
-      );
-    }
-    return (
-      <>
-        <Mic className="h-4 w-4" />
-        <span>Start Listening</span>
-      </>
-    );
   };
 
   return (
-    <div className="container mx-auto p-4 flex flex-col items-center justify-center">
+    <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-screen">
+      {/* Quotes Display */}
       <div 
-        className="might_wrapper mb-[12px] w-[80%] h-[300px] overflow-auto rounded-2xl shadow-xl"
+        className="w-full md:w-[90%] lg:w-[80%] h-[300px] overflow-auto rounded-xl md:rounded-2xl shadow-lg mb-4 md:mb-6 bg-white"
         ref={quotesContainerRef}
       >
-        <div className="border-t pt-4">
-          <div className="flex w-[100%] gap-2 mb-4 fex flex-row justify-center items-center">
-            <Book className="h-5 w-5" />
-            <h3 className="font-semibold flex flex-row items-center justify-center">
-              <span>VerseCatch</span>
-              <span className="bg-orange-300 bg-opacity-25 rounded-xl p-2 font-medium ml-2">
+        <div className="border-t pt-4 px-2 md:px-4">
+          <div className="flex flex-col md:flex-row items-center gap-2 mb-4">
+            <Book className="h-5 w-5 text-blue-600" />
+            <h3 className="font-semibold flex items-center gap-2">
+              <span className="text-lg md:text-xl">VerseCatch</span>
+              <span className="bg-orange-100 text-orange-800 rounded-lg px-3 py-1 text-sm md:text-base">
                 {selectedVersion}
               </span>
             </h3>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4 px-2 pb-4">
             {quotes.map((quote, index) => (
               <div
                 key={index}
-                className="p-4 bg-blue-50 rounded-lg animate-fade-in"
+                className="p-3 md:p-4 bg-blue-50 rounded-lg animate-fade-in shadow-sm"
               >
                 <div className="flex justify-between items-start">
-                  <p className="font-semibold text-blue-800 w-fit m-auto">
+                  <p className="font-semibold text-blue-800 text-sm md:text-base">
                     {quote.reference}
                   </p>
                 </div>
-                <p className="mt-2">{quote.text}</p>
+                <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-700">
+                  {quote.text}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            Bible Quote Detection
-          </CardTitle>
+      {/* Controls Card */}
+      <Card className="w-full md:max-w-2xl mx-2 md:mx-auto shadow-xl">
+        <CardHeader className="pb-3 md:pb-4">
+          <CardTitle className="text-lg md:text-xl">Bible Quote Detection</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 flex flex-col items-center justify">
-            <div className="animated_visualizer">
+          <div className="space-y-3 md:space-y-4 flex flex-col items-center">
+            <div className="w-full max-w-[200px] md:max-w-[300px]">
               <AudioVisualizer isListening={isListening} isPaused={isPaused} />
             </div>
-            
-            <div className="p-4 bg-gray-50 rounded-lg min-h-24 w-full">
-              <p className="font-semibold mb-2">Live Transcription:</p>
-              <div className="overflow-y-auto max-h-32 custom-scrollbar">
+
+            <div className="w-full p-3 md:p-4 bg-gray-50 rounded-lg min-h-[100px] shadow-inner">
+              <p className="font-semibold text-sm md:text-base mb-2 text-gray-700">
+                Live Transcription:
+              </p>
+              <div className="overflow-y-auto max-h-[80px] md:max-h-32 text-sm md:text-base text-gray-600">
                 {transcript || "Please start speaking..."}
               </div>
             </div>
 
-            <div className="w-full">
-              <label htmlFor="version" className="font-semibold">
-                Select Bible Version:
+            <div className="w-full space-y-1">
+              <label htmlFor="version" className="font-semibold text-sm md:text-base block mb-1">
+                Bible Version:
               </label>
               <select
                 id="version"
                 value={selectedVersion}
                 onChange={(e) => setSelectedVersion(e.target.value)}
-                className="mt-2 p-2 border rounded-md w-full"
+                className="w-full p-2 text-sm md:text-base border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
                 {bibleVersions.map((version) => (
-                  <option key={version} value={version}>
-                    {version}
-                  </option>
+                  <option key={version} value={version}>{version}</option>
                 ))}
               </select>
             </div>
@@ -233,9 +211,18 @@ setIsPaused(false)
             <Button
               onClick={toggleListening}
               variant={isListening ? "destructive" : isPaused ? "secondary" : "default"}
-              className="flex items-center gap-2 w-2xl rounded-2xl"
+              className="w-full md:w-auto px-6 py-3 text-sm md:text-base rounded-xl transition-all hover:scale-105 active:scale-95"
             >
-              {getButtonContent()}
+              <span className="flex items-center gap-2">
+                {isListening ? (
+                  <MicOff className="h-4 w-4" />
+                ) : isPaused ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Mic className="h-4 w-4" />
+                )}
+                {isListening ? "Stop" : isPaused ? "Continue" : "Start"} Listening
+              </span>
             </Button>
           </div>
         </CardContent>
